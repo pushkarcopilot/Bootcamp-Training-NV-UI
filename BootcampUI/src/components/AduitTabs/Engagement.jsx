@@ -2,15 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
 import { DataGrid } from "@mui/x-data-grid";
-import { getEngagements } from "../API/Engagement.api";
+import { getEngagements } from "../../API/Engagement.api";
 import moment from "moment";
-import { auditTypeMap, statusMap } from "./const";
-import { useNavigate } from 'react-router-dom';
+import { auditTypeMap, statusMap } from "../const";
+import { useNavigate } from "react-router-dom"; 
 
 export default function Engagement() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
   useEffect(() => {
     const getEngagementsList = async () => {
       try {
@@ -27,13 +28,13 @@ export default function Engagement() {
     getEngagementsList();
   }, []);
 
+  const handleCreateEngagementClick = () => {
+    navigate("/create-engagement");  // Redirect to create engagement page
+  };
   const handleViewClick = (row) => {
     alert(`Viewing details for ${row.clientName}`);
   };
 
-  const handleCreateEngagement = () => {
-    navigate('/create-engagement');  // Navigates to the CreateEngagement page
-  };
   const columns = [
     { field: "engagementId", headerName: "Engagement ID", width: 150 },
     { field: "clientName", headerName: "Client Name", width: 200 },
@@ -80,13 +81,13 @@ export default function Engagement() {
   return (
     <>
       <Box sx={{ marginTop: 2 }}>
-      <Button 
-        variant="contained" 
-        color="primary" 
-        onClick={handleCreateEngagement}
-      >
-        Create Engagement
-      </Button>
+      <Button
+          variant="contained"
+          color="primary"
+          onClick={handleCreateEngagementClick}  // Add onClick to handle navigation
+        >
+          Create Engagement
+        </Button>
       </Box>
 
       <Box sx={{ height: 400, width: "100%", marginTop: 2 }}>

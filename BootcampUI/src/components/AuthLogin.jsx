@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/msal-react";
-import { loginRequest } from "../authConfig";
+import { loginRequest } from "./authConfig";
 import RequestAccessPage from './RequestAccessPage';
-import CreateEngagement from './CreateEngagement';
 import '../Css/AuthLogin.css'; 
-import MainAuditPage from './MainAuditPage'
+import MainAuditPage from './AuditMainPage/MainAuditPage';
+
 
 const AuthLogin = () => {
   const { instance } = useMsal();
   const [isInitialized, setIsInitialized] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -33,6 +34,7 @@ const AuthLogin = () => {
         const roles = account?.idTokenClaims?.roles || [];
         const authorized = roles.includes("Engagement Owner") || roles.includes("Auditor");
         setIsAuthorized(true);
+        
       } else {
         instance.loginRedirect(loginRequest);
       }
