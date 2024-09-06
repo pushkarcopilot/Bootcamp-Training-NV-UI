@@ -1,5 +1,9 @@
-import React from "react";
+import React from 'react'
 
-export default function Settings() {
-  return <div>Aduit Settings</div>;
+import FrequencyRadio from '../Settings/FrequencyRadio'
+
+const Settings = () => {
+  return <FrequencyRadio />
 }
+
+export default Settings

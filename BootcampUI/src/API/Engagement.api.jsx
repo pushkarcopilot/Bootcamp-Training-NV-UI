@@ -11,3 +11,6 @@ export const getEngagements = async (params = {}) => {
   const { data } = await axiosInstance.get("/Engagement");
   return data;
 };
+
+export const saveEngagementSettings = async (params) => 
+  await axiosInstance.post('/Engagement/AddBackupSetting', params)
