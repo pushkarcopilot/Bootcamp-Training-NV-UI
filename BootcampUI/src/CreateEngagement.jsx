@@ -60,9 +60,9 @@ function CreateEngagement() {
     }
 
     return (
-        <Container className="mx-auto mt-2 border border-solid" >
+        <Container className="mt-2 border border-solid" >
             <div className="d-flex">
-                <h4 className="mt-3">Create Engagement:</h4>
+                <h5 className="mt-3">Create Engagement:</h5>
                 <HiOutlineHome size={30 } className="mt-3" style={{ marginLeft: "auto" }} />
             </div>
                 <hr></hr>
@@ -71,7 +71,7 @@ function CreateEngagement() {
                       <Col>
                         <Form.Group className="mb-3" controlId="validationCustom01">
                           <Form.Label >Client Name: </Form.Label>
-                          <Form.Control type="text" name="clientName" placeholder="Client Name"
+                          <Form.Control size="sm" type="text" name="clientName" placeholder="Client Name"
                                     value={formData.clientName} onChange={handleChange} required>
                                 </Form.Control>
                           <Form.Control.Feedback type="invalid">Please enter a client name.</Form.Control.Feedback>
@@ -80,7 +80,7 @@ function CreateEngagement() {
                       <Col>
                       <Form.Group> 
                 <Form.Label>Country: </Form.Label>               
-                    <Form.Select value={formData.countryId} name="countryId" onChange={handleChange} className="mb-3">
+                    <Form.Select size="sm" value={formData.countryId} name="countryId" onChange={handleChange} className="mb-3">
                         <option value="">Select Country</option>
                         <option value="1">AFGHANISTAN</option>
                         <option value="2">ARGENTINA</option>
@@ -102,7 +102,7 @@ function CreateEngagement() {
                       <Col>
                           <Form.Group className="mb-3" controlId="validationCustom02">                                      
                             <Form.Label>Audit Type: </Form.Label>
-                            <Form.Select value={formData.auditTypeId} name="auditTypeId" onChange={handleChange} required>
+                            <Form.Select size="sm" value={formData.auditTypeId} name="auditTypeId" onChange={handleChange} required>
                               <option value="">Select Audit Type</option>
                               <option value="1">Financial</option>
                               <option value="2">Compliance</option>
@@ -114,7 +114,7 @@ function CreateEngagement() {
                         <Col>
                           <Form.Group className="mb-3" controlId="validationCustom03">
                             <Form.Label>Status: </Form.Label>
-                            <Form.Select value={formData.statusId} name="statusId" onChange={handleChange} required>
+                            <Form.Select size="sm" value={formData.statusId} name="statusId" onChange={handleChange} required>
                               <option value="">Select status</option>
                               <option value="1">Not started</option>
                               <option value="2">Assigned</option>
@@ -131,14 +131,14 @@ function CreateEngagement() {
                       <Col>
                           <Form.Group className="mb-3" controlId="validationCustom04">
                             <Form.Label>Start Date: </Form.Label>
-                            <Form.Control type="date" name="startDate" value={formData.startDate} onChange={handleChange} required></Form.Control>
+                            <Form.Control size="sm" type="date" name="startDate" value={formData.startDate} onChange={handleChange} required></Form.Control>
                             <Form.Control.Feedback type="invalid">Please select start date.</Form.Control.Feedback >
                           </Form.Group>
                       </Col>
                         <Col>
                           <Form.Group className="mb-3" controlId="validationCustom05">
                             <Form.Label>End Date: </Form.Label>
-                            <Form.Control type="date" name="endDate" value={formData.endDate} onChange={handleChange} required></Form.Control>
+                            <Form.Control size="sm" type="date" name="endDate" value={formData.endDate} onChange={handleChange} required></Form.Control>
                             <Form.Control.Feedback type="invalid">Please select end date.</Form.Control.Feedback >
                           </Form.Group>
                       </Col>
@@ -149,7 +149,7 @@ function CreateEngagement() {
                           <Form.Control.Feedback type="invalid">Please select Auditor.</Form.Control.Feedback >
                         </Form.Group>               
                 <Form.Group className="mb-3 d-flex">
-                    <Button type="submit" style={{ marginLeft: "auto" }}>Save</Button>
+                    <Button size="sm" type="submit" style={{ marginLeft: "auto" }}>Save</Button>
                 </Form.Group>
                 </Form>
             </Container>
