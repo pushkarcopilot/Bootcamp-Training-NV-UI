@@ -52,11 +52,7 @@ function CreateEngagement() {
         }
         setValidated(true);
         setFormData(formData);
-         await fetch('engagement', {
-            method: 'POST',
-            headers: { 'Content-type': 'application/json' },
-            body: JSON.stringify(formData)
-         })
+         await fetch('api/engagement');
     }
 
     return (
