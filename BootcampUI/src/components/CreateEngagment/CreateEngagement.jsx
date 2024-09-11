@@ -18,7 +18,7 @@ function CreateEngagement() {
     auditEndDate: "",
     countryId: "",
     auditors: [],
-    engagementStatusId: "",
+    statusId: "",
   });
   const options = [
     { value: '1', label: 'A K KUKKAR & ASSOCIATES' },
@@ -43,7 +43,7 @@ function CreateEngagement() {
   };
 
   const handleChange = (e) => {
-    if(e.target.name==="auditTypeId" || e.target.name==="engagementStatusId"){
+    if(e.target.name==="auditTypeId" || e.target.name==="statusId"){
     setFormData({
       ...formData,
       [e.target.name]: Number(e.target.value)
@@ -154,7 +154,7 @@ function CreateEngagement() {
             <Col>
               <Form.Group className="mb-3" controlId="validationCustom03">
                 <Form.Label>Status: </Form.Label>
-                <Form.Select value={formData.engagementStatusId} name="engagementStatusId" onChange={handleChange} required>
+                <Form.Select value={formData.statusId} name="statusId" onChange={handleChange} required>
                   <option value="">Select status</option>
                   <option value="1">Not started</option>
                   <option value="2">Assigned</option>
