@@ -11,6 +11,7 @@ import { saveEngagementSettings } from '../../API/Engagement.api'
 
 const FrequencyRadio = () => {
   const [frequency, setFrequency] = useState('')
+  const [showFooter, setShowFooter] = useState(false)
 
   const handleSave = async () => {
     try {
@@ -18,7 +19,7 @@ const FrequencyRadio = () => {
     } catch (err) {
       console.error('An error occurred while saving Engagement setting', err)
     } finally {
-      setFrequency('')
+      setShowFooter(false)
     }
   }
 
@@ -41,6 +42,7 @@ const FrequencyRadio = () => {
                 <Radio
                   onClick={e => {
                     setFrequency(e.target.value)
+                    setShowFooter(true)
                   }}
                 />
               }
@@ -50,7 +52,7 @@ const FrequencyRadio = () => {
         </RadioGroup>
       </FormControl>
 
-      {frequency && <FooterButtons handleSave={handleSave} setFrequency={setFrequency} />}
+      {showFooter && <FooterButtons handleSave={handleSave} setFrequency={setFrequency} setShowFooter={setShowFooter} />}
     </>
   )
 }

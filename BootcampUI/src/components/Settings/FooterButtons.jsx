@@ -2,7 +2,7 @@ import React from 'react'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 
-const FooterButtons = ({ handleSave, setFrequency }) => (
+const FooterButtons = ({ handleSave, setFrequency, setShowFooter }) => (
   <Box
     style={{
       marginTop: 20,
@@ -11,6 +11,7 @@ const FooterButtons = ({ handleSave, setFrequency }) => (
     <Button
       onClick={() => {
         setFrequency('')
+        setShowFooter(false)
       }}
       variant='outlined'
       color='error'
