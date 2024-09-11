@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://localhost:44341/api", //add your local api
+  baseURL: "http://localhost:5239/api", //add your local api
   headers: {
     "Content-Type": "application/json",
   },
@@ -10,6 +10,10 @@ const axiosInstance = axios.create({
 export const getEngagements = async (params = {}) => {
   const { data } = await axiosInstance.get("/Engagement");
   return data;
+};
+
+export const createEngagement = async (params) => {
+  await axiosInstance.post('/Engagement/Create', params)
 };
 
 export const saveEngagementSettings = async (params) => 

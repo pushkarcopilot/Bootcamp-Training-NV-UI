@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import { Container, Form, Row, Col, Button } from 'react-bootstrap';
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/msal-react";
 import CreatableSelect from 'react-select/creatable';
+import { createEngagement } from "../../API/Engagement.api";
 import { HiOutlineHome } from "react-icons/hi2";
 import { useNavigate } from 'react-router-dom';
 import { loginRequest } from "../authConfig";
@@ -74,12 +75,7 @@ function CreateEngagement() {
      }
     setValidated(true);
     setFormData(formData);
-
-    await fetch('http://localhost:5239/api/Engagement/Create', {
-      method: 'POST',
-      headers: { 'Content-type': 'application/json' },
-      body: JSON.stringify(formData)
-    })
+    await createEngagement(formData);
   }
 
   return (<>
