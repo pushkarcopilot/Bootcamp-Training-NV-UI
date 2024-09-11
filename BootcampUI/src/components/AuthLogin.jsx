@@ -8,7 +8,7 @@ import MainAuditPage from '../components/AuditMainPage/MainAuditPage';
 const AuthLogin = () => {
   const { instance } = useMsal();
   const [isInitialized, setIsInitialized] = useState(false);
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(true);
   const [authuserData, setAuthUserData] = useState(null); // Store API response
   const [userData, setUserData] = useState(null); // Corrected state setter name
  
