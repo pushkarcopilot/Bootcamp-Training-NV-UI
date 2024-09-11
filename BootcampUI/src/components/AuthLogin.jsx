@@ -29,7 +29,7 @@ const AuthLogin = () => {
   useEffect(() => {
     const fetchAuthUserData = async () => {
       try {
-        const response = await fetch("https://localhost:7244/api/AuthUser/GetAuthUsers");
+        const response = await fetch("http://localhost:5239/api/AuthUser/GetAuthUsers");
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

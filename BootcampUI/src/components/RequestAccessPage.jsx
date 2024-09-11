@@ -35,7 +35,7 @@ const RequestAccessPage = () => {
 
     setError('');
     try {
-      const response = await fetch('https://localhost:7244/api/AuthUser', {
+      const response = await fetch('http://localhost:5239/api/AuthUser', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
