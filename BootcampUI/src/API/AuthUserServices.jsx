@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = "https://localhost:7244/api/AuthUser";
+const BASE_URL = "http://localhost:5239/api/AuthUser/GetAuthUsers";
 
 const getUserDataByName = async (name) => {
   try {
