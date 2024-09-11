@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const RequestAccessPage = () => {
   const [role, setRole] = useState('');
-  const [email, setEmail] = useState('');
+  const [username, setEmail] = useState('');
   const [error, setError] = useState('');
 
   const handleRoleChange = (event) => {
@@ -17,10 +17,10 @@ const RequestAccessPage = () => {
     if (!role) {
       return 'Please select a role.';
     }
-    if (!email) {
+    if (!username) {
       return 'Please enter an email address.';
     }
-    if (!/\S+@\S+\.\S+/.test(email)) {
+    if (!/\S+@\S+\.\S+/.test(username)) {
       return 'Please enter a valid email address.';
     }
     return '';
@@ -35,14 +35,14 @@ const RequestAccessPage = () => {
 
     setError('');
     try {
-      const response = await fetch('https://localhost:7137/WeatherForecast/send', {
+      const response = await fetch('https://localhost:7244/api/AuthUser', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           role,
-          email
+          username
         })
       });
 
@@ -119,6 +119,7 @@ const RequestAccessPage = () => {
 
   return (
     <div style={containerStyle}>
+      <h3 style={titleStyle}> You are not an authorized user. Please raise a request to your admin </h3><br/>
       <h1 style={titleStyle}>Request Access</h1>
       {error && <div style={errorStyle}>{error}</div>}
       <div style={formGroupStyle}>
@@ -135,11 +136,11 @@ const RequestAccessPage = () => {
         </select>
       </div>
       <div style={formGroupStyle}>
-        <label htmlFor="email" style={labelStyle}>Email:</label>
+        <label htmlFor="username" style={labelStyle}>Email:</label>
         <input
           type="email"
           id="email"
-          value={email}
+          value={username}
           onChange={handleEmailChange}
           placeholder="Enter email address"
           style={inputStyle}

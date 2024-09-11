@@ -16,5 +16,5 @@ export const createEngagement = async (params) => {
   await axiosInstance.post('/Engagement/Create', params)
 };
 
-export const saveEngagementSettings = async (params) => 
-  await axiosInstance.post('/Engagement/AddBackupSetting', params)
+export const saveEngagementSettings = async (params) =>
+  await axiosInstance.post("/Engagement/AddBackupSetting", params);
