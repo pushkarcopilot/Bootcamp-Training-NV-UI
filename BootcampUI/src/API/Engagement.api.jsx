@@ -12,6 +12,11 @@ export const getEngagements = async (params = {}) => {
   return data;
 };
 
+export const getDropdownValues = async (params = {}) => {
+  const { data } = await axiosInstance.get("/Engagement/Dropdown");
+  return data;
+};
+
 export const createEngagement = async (params) => {
   await axiosInstance.post('/Engagement/Create', params)
 };
