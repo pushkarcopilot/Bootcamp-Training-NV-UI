@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { jsPDF } from "jspdf"; // Import jsPDF library
 //import "./Style.css";
+import {  useMsal } from "@azure/msal-react";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Container, Form, Row, Col, Button } from 'react-bootstrap';
+import CreatableSelect from 'react-select/creatable';
+import { HiOutlineHome } from "react-icons/hi2";
+import { useNavigate } from "react-router-dom";
 import { PencilFill, House } from 'react-bootstrap-icons';
 import { useParams } from "react-router-dom";
 import Select from 'react-select';
  
 const ViewEngagement = () => {
+
+  const navigate = useNavigate();
+  const { instance } = useMsal();
 
   const [options, setOptions] = useState([]);
 
@@ -19,9 +27,20 @@ const ViewEngagement = () => {
   const [selectedStatus, setSelectedStatus] = useState('');
 
   const [formData, setFormData] = useState({});
+    const [validated, setValidated] = useState(false);
 
   const [auditOutcome, setAuditOutcome] = useState('');
   const {engagementId} = useParams();
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  const handleLogout = () => {
+    instance.logoutRedirect({
+      postLogoutRedirectUri: "http://localhost:3002/logout",
+    });
+  };
+
  
   useEffect(() => {
 
@@ -49,7 +68,7 @@ const ViewEngagement = () => {
 
         setSelectedStatus(result[0].statusId);
 
-        setSelectedAuditorName(result[0].auditors[0]);
+        setSelectedAuditorName(result[0].auditors);
 
         setAuditOutcome(result[0].auditOutcome || '');
 
@@ -115,7 +134,18 @@ const ViewEngagement = () => {
 
   };
 
-  const auditorName = [
+  const handleAuditorsChange = (e) => {
+    var list = [];
+    for (var i = 0; i < e.length; i++) {
+      list.push(Number(e[i].value));
+    }
+    setFormData({
+      ...formData,
+      auditors: list
+    });
+  }
+
+  const auditorNames = [
     { value: '1', label: 'A K KUKKAR & ASSOCIATES'},
     { value: '2', label: 'A C BHUTERIA AND CO'},
     { value: '3', label: 'A G A & ASSOCIATES'},
@@ -128,18 +158,28 @@ const ViewEngagement = () => {
     { value: '10', label: 'ANIL ANKIT & CO' },
 ];
 
-  // const handleAttachmentClick = () => {
-  //   fileInputRef.current.click();
-  // };
+const auditTypeOptions = [
+  { value: '', label: 'Select Audit Type' },
+  { value: '1', label: 'Financial' },
+  { value: '2', label: 'Compliance' },
+  { value: '3', label: 'Operational' },
+];
 
-  // const handleAttachmentChange = (event) => {
-  //   const file = event.target.files[0];
-  //   if (file) {
-  //     setAttachment(file);
-  //   }
-  // };
+
+  const getAuditorOptions = () => {
+    if(selectedAuditorName.length==0)
+        return null; 
+    
+    return selectedAuditorName.map(value => ({
+      value: value,
+      label: auditorNames.find(name => name.value == value)?.label || 'Unknown Auditor',
+    }));
+
+    
+  };
  
   const handleGenerateReport = () => {
+    console.log(getAuditorOptions().map(name=>{return name.label;})) 
 
     // Validation: Ensure both "Audit Status" and "Audit Outcome" are selected
 
@@ -165,7 +205,7 @@ const ViewEngagement = () => {
 
     const content = `
 
-      This is to certify that we have completed a ${selectedAuditType} audit of ${formData.clientName} 
+      This is to certify that we have completed a ${auditTypeOptions.find(type=>type.value==selectedAuditType).label} audit of ${formData.clientName} 
 
       for the duration of ${formData.auditStartDate} and ${formData.auditEndDate}.
  
@@ -177,7 +217,7 @@ const ViewEngagement = () => {
  
       Auditors: 
 
-      ${formData.auditorName}
+      ${getAuditorOptions().map(name=>{return name.label;})}
 
     `;
  
@@ -188,166 +228,183 @@ const ViewEngagement = () => {
   };
  
   return (
+    <>
+     <div className="d-flex justify-content-between align-items-center">
+      <Button
+        variant="secondary"
+        onClick={handleBack}
+        style={{ marginLeft: '120px', marginTop: '40px' }}>
+        Back
+      </Button>
+
+      <Button
+        variant="danger"
+        onClick={handleLogout}
+        style={{ marginRight: '120px', marginTop: '40px' }}>
+        Logout
+      </Button>
+    </div>
 <div>
-<meta charSet="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700" />
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
-<link href="style.css" rel="stylesheet" type="text/css" />
-<div className="container" style={{ width: "60%" }}>
-<div className="signup-form">
-<form method="post">
-<div className="form-row">
-<div className="form-group col-md-10">
-<h2>View Engagement</h2>
-</div>
-<div className="form-group col-md-2">
-<House />
-</div>
-</div>
+<Container className="mx-auto mt-2 border border-solid" >
+        <div className="d-flex">
+          <h4 className="mt-3">View Engagement:</h4>
+          <HiOutlineHome size={30} className="mt-3" style={{ marginLeft: "auto" }} />
+        </div>
+        <hr></hr>
+
  
-            <div className="form-row">
-<div className="form-group col-md-6">
-<label htmlFor="clientnamelbl">Client Name</label> <PencilFill />
-<input type="text" value={formData.clientName} name="clientName" onChange={handleChange} className="form-control" id="clientnameid" placeholder="Client Name" />
-</div>
-<div className="form-group col-md-6">
-<label htmlFor="audittypelabl">Audit Type</label> <PencilFill />
-{/* <input type="text" className="form-control" value={formData.auditType} name="AuditType" id="audittypeid" placeholder="Audit Type" /> */}
-<select name="AuditType" value={selectedAuditType} onChange={handleCntryChange} id="audittypeid" className="form-control" placeholder="Audit Type">
-<option value="">Select Audit Type</option>
-                              <option value="1">Financial</option>
-                              <option value="2">Compliance</option>
-                              <option value="3">Operational</option>
-                              </select>
-</div>
-</div>
-<div className="form-row">
-<div className="form-group col-md-4">
-<label htmlFor="startdatelbl">Start Date</label> <PencilFill />
-<input type="text" className="form-control" value={formData.auditStartDate} id="startdateid" placeholder="Start Date" />
-</div>
-<div className="form-group col-md-4">
-<label htmlFor="enddatelbl">End Date</label> <PencilFill />
-<input type="text" className="form-control" value={formData.auditEndDate} id="enddateid" placeholder="End Date" />
-</div>
-<div className="form-group col-md-4">
-<label htmlFor="countrylbl">Country</label> <PencilFill />
-<select name="country" value={selectedValue} onChange={handleCntryChange} id="countryid" className="form-control" placeholder="Audit status">
-{/* <option value="0">Select Country</option>
-
-                  {options.map((option) => (
-<option key={option.countryId} value={option.countryId}>
-
-                      {option.countryName}
-</option>
-
-                  ))} */}
-                   <option value="">Select Country</option>
-                        <option value="1">AFGHANISTAN</option>
-                        <option value="2">ARGENTINA</option>
-                        <option value="3">FRANCE</option>
-                        <option value="4">NORWAY</option>
-                        <option value="5">INDIA</option>
-                        <option value="6">CHINA</option>
-                        <option value="7">JAPAN</option>
-                        <option value="8">NETHERLANDS</option>
-                        <option value="9">EGYPT</option>
-                        <option value="10">UNITED STATES</option>
-                        <option value="11">Not applicable</option>
-
-</select>
-</div>
-</div>
-<div className="form-row">
-<div className="form-group col-md-6">
-<label htmlFor="auditorlbl">Auditors</label><PencilFill />
-<select className="form-control" value={selectedAuditorName} id="Auditorsid" placeholder="Auditors" name="auditor">
-<option value="" disabled>Select an auditor</option>
-  <option value="1">A K KUKKAR & ASSOCIATES</option>
-  <option value="2">A C BHUTERIA AND CO</option>
-  <option value="3">A G A & ASSOCIATES</option>
-  <option value="4">A G S G & CO.</option>
-  <option value="5">A. SINGHI & CO.</option>
-  <option value="6">A.V.S.S. & Associates</option>
-  <option value="7">AAR & CO</option>
-  <option value="8">AGARWAL U R S & CO</option>
-  <option value="9">AGRAWAL PARMAR & CO</option>
-  <option value="10">ANIL ANKIT & CO</option>
-{/* <Select
-      isMulti
-      value={formData.auditors}
-      //onChange={handleAuditorChange}
-      options={auditorName}
-      className="form-control"
-      placeholder="Select auditors"
-    /> */}
-    </select>
-</div>
-<div className="form-group col-md-6">
-<label htmlFor="auditstatuslbl">Audit Status</label>
-<select name="auditstatus" value={selectedStatus} onChange={handlestatusChange} id="auditstatusid" className="form-control" placeholder="Audit status">
-{/* <option value="0">Select Audit Status</option>
-
-                  {auditsts.map((option) => (
-<option key={option.auditStatusId} value={option.auditStatusId}>
-
-                      {option.auditStatus}
-</option>
-
-                  ))} */}
+        <Form noValidate validated={validated} onSubmit={handleGenerateReport}>
+          <Row>
+            <Col>
+              <Form.Group className="mb-3" controlId="validationCustom01">
+                <Form.Label >Client Name: </Form.Label>
+                <Form.Control type="text" name="clientName" placeholder="Client Name"
+                  value={formData.clientName} onChange={handleChange} required>
+                </Form.Control>
+                <Form.Control.Feedback type="invalid">Please enter a client name.</Form.Control.Feedback>
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Group>
+                <Form.Label>Country: </Form.Label>
+                <Form.Select value={selectedValue} name="countryId" onChange={handleChange} className="mb-3">
+                  <option value="">Select Country</option>
+                  <option value="1">AFGHANISTAN</option>
+                  <option value="2">ARGENTINA</option>
+                  <option value="3">FRANCE</option>
+                  <option value="4">NORWAY</option>
+                  <option value="5">INDIA</option>
+                  <option value="6">CHINA</option>
+                  <option value="7">JAPAN</option>
+                  <option value="8">NETHERLANDS</option>
+                  <option value="9">EGYPT</option>
+                  <option value="10">UNITED STATES</option>
+                  <option value="11">Not applicable</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>            
+          </Row>
+          <Row>
+          <Col>
+              <Form.Group className="mb-3" controlId="validationCustom02">
+                <Form.Label>Audit Type: </Form.Label>
+                <Form.Select value={selectedAuditType} name="auditTypeId" onChange={handleChange} required>
+                {auditTypeOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+                </Form.Select>
+                <Form.Control.Feedback type="invalid">Please select Audit type.</Form.Control.Feedback >
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Group className="mb-3" controlId="validationCustom03">
+                <Form.Label>Audit Status: </Form.Label>
+                <Form.Select value={selectedStatus} name="statusId" onChange={handleChange} required>
                   <option value="">Select status</option>
-                              <option value="1">Not started</option>
-                              <option value="2">Assigned</option>
-                              <option value="3">In progress</option>
-                              <option value="4">Completed</option>
-</select>
-</div>
-</div>
-<div className="form-row">
-<div className="form-group col-md-6">
-<label htmlFor="accountnumberlbl">Account Number</label>
-<input type="text" className="form-control" onChange={handleChange} value={formData.accountNumber} id="accountnumbertid" placeholder="123" />
-</div>
-<div className="form-group col-md-6">
-<label htmlFor="accountreceivabllbl">Account Receivables</label>
-<input type="text" className="form-control" value={formData.accountReceivable} onChange={handleChange} id="accountreceivablid" placeholder="$123" />
-</div>
-</div>
-<div className="form-row">
-<div className="form-group col-md-6">
-<label htmlFor="cashlbl">Cash</label>
-<input type="text" className="form-control" value={formData.accountCash} onChange={handleChange} id="cashid" placeholder="$123" />
-</div>
-<div className="form-group col-md-6">
-<label htmlFor="audittypelabl">Other Expenses</label>
-<input type="text" className="form-control" value={formData.otherExpenses} onChange={handleChange} id="otherexpenseid" placeholder="$123" />
-</div>
-</div>
-<div className="form-row">
-<div className="form-group col-md-6">
-<label htmlFor="inventorylbl">Inventory</label>
-<input type="text" className="form-control" value={formData.inventoryint} onChange={handleChange} id="inventoryid" placeholder="Inventory" />
-</div>
-<div className="form-group col-md-6">
-<label htmlFor="auditoutcomelabl">Audit Outcome</label>
-<select name="auditoutcome" id="auditoutcomeid" className="form-control" placeholder="Audit Outcome" value={auditOutcome} onChange={handleOutcomeChange}>
-<option value="">Select Audit Outcome</option>
+                  <option value="1">Not started</option>
+                  <option value="2">Assigned</option>
+                  <option value="3">In progress</option>
+                  <option value="4">Completed</option>
+                </Form.Select>
+                <Form.Control.Feedback type="invalid">Please select status.</Form.Control.Feedback >
+              </Form.Group>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Form.Group className="mb-3" controlId="validationCustom04">
+                <Form.Label>Start Date: </Form.Label>
+                <Form.Control type="text" name="auditStartDate" value={formData.auditStartDate} onChange={handleChange} required></Form.Control>
+                <Form.Control.Feedback type="invalid">Please select start date.</Form.Control.Feedback >
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Group className="mb-3" controlId="validationCustom05">
+                <Form.Label>End Date: </Form.Label>
+                <Form.Control type="text" name="auditEndDate" value={formData.auditEndDate} onChange={handleChange} required></Form.Control>
+                <Form.Control.Feedback type="invalid">Please select end date.</Form.Control.Feedback >
+              </Form.Group>
+            </Col> 
+          </Row>
+          <Row>
+          <Form.Group className="mb-3" controlId="validationCustom06">
+            <Form.Label>Auditors: </Form.Label>
+            <CreatableSelect name="auditors" isMulti options={auditorNames} onChange={handleAuditorsChange} value={getAuditorOptions()}required />
+            <Form.Control.Feedback type="invalid">Please select Auditor.</Form.Control.Feedback >
+          </Form.Group>
+          </Row>
+          <Row>
+          <Col>
+              <Form.Group className="mb-3" controlId="validationCustom07">
+                <Form.Label >Account Number </Form.Label>
+                <Form.Control type="text" name="accountnumber" placeholder="123"
+                  value={formData.accountNumber} onChange={handleChange}>
+                </Form.Control>
+                {/* <Form.Control.Feedback type="invalid">Please enter an Account number.</Form.Control.Feedback> */}
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Group className="mb-3" controlId="validationCustom08">
+                <Form.Label >Account Receivables</Form.Label>
+                <Form.Control type="text" name="accountreceivable" placeholder="$123"
+                  value={formData.accountReceivable} onChange={handleChange}>
+                </Form.Control>
+                {/* <Form.Control.Feedback type="invalid">Please enter an Account number.</Form.Control.Feedback> */}
+              </Form.Group>
+            </Col>
+          </Row>
+          <Row>
+          <Col>
+              <Form.Group className="mb-3" controlId="validationCustom09">
+                <Form.Label >Cash </Form.Label>
+                <Form.Control type="text" name="cash" placeholder="123"
+                  value={formData.accountCash} onChange={handleChange}>
+                </Form.Control>
+                {/* <Form.Control.Feedback type="invalid">Please enter an Account number.</Form.Control.Feedback> */}
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Group className="mb-3" controlId="validationCustom10">
+                <Form.Label >Other Expenses</Form.Label>
+                <Form.Control type="text" name="otherexpenses" placeholder="$123"
+                  value={formData.otherExpenses} onChange={handleChange}>
+                </Form.Control>
+                {/* <Form.Control.Feedback type="invalid">Please enter an Account number.</Form.Control.Feedback> */}
+              </Form.Group>
+            </Col>
+          </Row>
+          <Row>
+          <Col>
+              <Form.Group className="mb-3" controlId="validationCustom11">
+                <Form.Label >Inventory </Form.Label>
+                <Form.Control type="text" name="cash" placeholder="$123"
+                  value={formData.accountCash} onChange={handleChange}>
+                </Form.Control>
+                {/* <Form.Control.Feedback type="invalid">Please enter an Account number.</Form.Control.Feedback> */}
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Group className="mb-3" controlId="validationCustom12">
+                <Form.Label >Audit Outcome</Form.Label>
+                <Form.Select value={auditOutcome} name="auditoutcome" onChange={handleOutcomeChange} required>
+                <option value="">Select Audit Outcome</option>
 <option value="Satisfied">Satisfied</option>
 <option value="Insignificant Risks Found">Insignificant Risks Found</option>
 <option value="Significant Risks Found">Significant Risks Found</option>
-</select>
-</div>{console.log(selectedAuditorName)}
-</div>
-<button type="button" className="btn btn-primary" onClick={handleGenerateReport}>
 
-              Generate Report
-</button>
-</form>
-</div>
-</div>
-</div>
+                </Form.Select>
+                {/* <Form.Control.Feedback type="invalid">Please enter an Account number.</Form.Control.Feedback> */}
+              </Form.Group>
+            </Col>
+          </Row>
+          <Form.Group className="mb-3 d-flex">
+            <Button type="submit" style={{ marginLeft: "auto" }}>Generate Report</Button>
+          </Form.Group>
+          </Form>
+      </Container></div>
+  </>
 
   );
 
