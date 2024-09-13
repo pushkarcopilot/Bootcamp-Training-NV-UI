@@ -20,8 +20,6 @@ const ViewEngagement = () => {
 
   const [selectedValue, setSelectedValue] = useState('');
 
-  const [selectedAuditorName, setSelectedAuditorName] = useState([]);
-
   const [selectedAuditType, setSelectedAuditType] = useState('');
 
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -51,6 +49,8 @@ const ViewEngagement = () => {
     // GetAuditstatusData();
 
   }, []);
+
+  useEffect(()=>{},[formData]);
  
   const fetchEngagement = () => {
 
@@ -60,15 +60,13 @@ const ViewEngagement = () => {
 
       .then((result) => {
 
-        setFormData(result[0]);
+        setFormData({...result[0],auditStartDate:result[0].auditStartDate.split('T')[0],auditEndDate:result[0].auditEndDate.split('T')[0]});
 
         setSelectedValue(result[0].countryId);
 
         setSelectedAuditType(result[0].auditTypeId);
 
         setSelectedStatus(result[0].statusId);
-
-        setSelectedAuditorName(result[0].auditors);
 
         setAuditOutcome(result[0].auditOutcome || '');
 
@@ -117,19 +115,14 @@ const ViewEngagement = () => {
   // };
  
   const handleCntryChange = (event) => {
-
     setSelectedValue(event.target.value);
-
   };
  
   const handlestatusChange = (event) => {
-
     setSelectedStatus(event.target.value);
-
   };
  
   const handleOutcomeChange = (event) => {
-
     setAuditOutcome(event.target.value);
 
   };
@@ -143,6 +136,7 @@ const ViewEngagement = () => {
       ...formData,
       auditors: list
     });
+   
   }
 
   const auditorNames = [
@@ -167,10 +161,10 @@ const auditTypeOptions = [
 
 
   const getAuditorOptions = () => {
-    if(selectedAuditorName.length==0)
+    if(!formData || !formData.auditors)
         return null; 
     
-    return selectedAuditorName.map(value => ({
+    return formData.auditors.map(value => ({
       value: value,
       label: auditorNames.find(name => name.value == value)?.label || 'Unknown Auditor',
     }));
@@ -178,8 +172,13 @@ const auditTypeOptions = [
     
   };
  
-  const handleGenerateReport = () => {
-    console.log(getAuditorOptions().map(name=>{return name.label;})) 
+  const handleGenerateReport = (e) => {
+    if (e.currentTarget.checkValidity() === false) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+   setValidated(true);
+  
 
     // Validation: Ensure both "Audit Status" and "Audit Outcome" are selected
 
@@ -190,7 +189,6 @@ const auditTypeOptions = [
       return;
 
     }
- 
     if (selectedStatus === 'Completed' && !auditOutcome) {
 
       alert('Audit Outcome is required when the status is Completed.');
@@ -198,6 +196,15 @@ const auditTypeOptions = [
       return;
 
     }
+
+    if (auditOutcome=="") {
+
+      alert('Audit Outcome is required to generate report.');
+
+      return;
+
+    }
+    
  
     // Generate PDF using jsPDF
 
@@ -213,11 +220,11 @@ const auditTypeOptions = [
  
       Engagement owner: 
 
-      [Owner Name]
+      ${formData.clientName}
  
       Auditors: 
 
-      ${getAuditorOptions().map(name=>{return name.label;})}
+      ${getAuditorOptions().map(name=>{return " "+name.label;})}
 
     `;
  
@@ -244,7 +251,7 @@ const auditTypeOptions = [
         Logout
       </Button>
     </div>
-<div>
+<div>{console.log(formData)}
 <Container className="mx-auto mt-2 border border-solid" >
         <div className="d-flex">
           <h4 className="mt-3">View Engagement:</h4>
@@ -316,14 +323,14 @@ const auditTypeOptions = [
             <Col>
               <Form.Group className="mb-3" controlId="validationCustom04">
                 <Form.Label>Start Date: </Form.Label>
-                <Form.Control type="text" name="auditStartDate" value={formData.auditStartDate} onChange={handleChange} required></Form.Control>
+                <Form.Control type="date" name="auditStartDate" value={formData.auditStartDate} onChange={handleChange} required></Form.Control>
                 <Form.Control.Feedback type="invalid">Please select start date.</Form.Control.Feedback >
               </Form.Group>
             </Col>
             <Col>
               <Form.Group className="mb-3" controlId="validationCustom05">
                 <Form.Label>End Date: </Form.Label>
-                <Form.Control type="text" name="auditEndDate" value={formData.auditEndDate} onChange={handleChange} required></Form.Control>
+                <Form.Control type="date" name="auditEndDate" value={formData.auditEndDate} onChange={handleChange} required></Form.Control>
                 <Form.Control.Feedback type="invalid">Please select end date.</Form.Control.Feedback >
               </Form.Group>
             </Col> 
@@ -388,14 +395,14 @@ const auditTypeOptions = [
             <Col>
               <Form.Group className="mb-3" controlId="validationCustom12">
                 <Form.Label >Audit Outcome</Form.Label>
-                <Form.Select value={auditOutcome} name="auditoutcome" onChange={handleOutcomeChange} required>
+                <Form.Select value={auditOutcome} name="auditoutcome" onChange={handleOutcomeChange} required isInvalid={validated && !formData.auditOutcome}>
                 <option value="">Select Audit Outcome</option>
 <option value="Satisfied">Satisfied</option>
 <option value="Insignificant Risks Found">Insignificant Risks Found</option>
 <option value="Significant Risks Found">Significant Risks Found</option>
 
                 </Form.Select>
-                {/* <Form.Control.Feedback type="invalid">Please enter an Account number.</Form.Control.Feedback> */}
+                <Form.Control.Feedback type="invalid">Please enter the Audit Outcome.</Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
