@@ -48,25 +48,19 @@ function CreateEngagement() {
     navigate(-1);
   };
 
-  const handleLogout = () => {
-    instance.logoutRedirect({
-      postLogoutRedirectUri: "http://localhost:3002/logout",
-    });
-  };
-
   const handleChange = (e) => {
-    if(e.target.name==="auditTypeId" || e.target.name==="statusId"){
-    setFormData({
-      ...formData,
-      [e.target.name]: Number(e.target.value)
-    });
-  }else{
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  }
-  }
+    if (e.target.name === "auditTypeId" || e.target.name === "statusId") {
+      setFormData({
+        ...formData,
+        [e.target.name]: Number(e.target.value),
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
+    }
+  };
 
   const handleAuditorsChange = (e) => {
     var list = [];
@@ -75,18 +69,23 @@ function CreateEngagement() {
     }
     setFormData({
       ...formData,
-      auditors: list
+      auditors: list,
     });
-  }
+  };
 
   async function handleSubmit(e) {
     if (e.currentTarget.checkValidity() === false) {
-       e.preventDefault();
-       e.stopPropagation();
-     }
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setValidated(true);
-    setFormData(formData);
-    await createEngagement(formData);
+    try {
+      setFormData(formData);
+      await createEngagement(formData);
+      navigate(-1);
+    } catch (error) {
+      console.error("Error creating engagement:", error);
+    }
   }
   
   const auditorOptions = auditors.map(auditor=>({value:auditor.auditorId.toString(),label:auditor.name}));
@@ -110,13 +109,6 @@ function CreateEngagement() {
         onClick={handleBack}
         style={{ marginLeft: '120px', marginTop: '40px' }}>
         Back
-      </Button>
-
-      <Button
-        variant="danger"
-        onClick={handleLogout}
-        style={{ marginRight: '120px', marginTop: '40px' }}>
-        Logout
       </Button>
     </div>
 
