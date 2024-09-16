@@ -81,7 +81,7 @@ function CreateEngagement() {
     setValidated(true);
     try {
       setFormData(formData);
-      await createEngagement(formData);
+      await createEngagement(formData).then(json => alert("Data saved successfully!"))
       navigate(-1);
     } catch (error) {
       console.error("Error creating engagement:", error);
